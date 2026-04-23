@@ -1,0 +1,17 @@
+import pandas as pd
+from datetime import datetime
+
+def load_data(path):
+    df = pd.read_csv(path)
+    df['Expiry_Date'] = pd.to_datetime(df['Expiry_Date'])
+    df['Last_Sold_Date'] = pd.to_datetime(df['Last_Sold_Date'])
+    return df
+
+def process_data(df):
+    today = pd.to_datetime(datetime.today())
+
+    df['Days_To_Expiry'] = (df['Expiry_Date'] - today).dt.days
+    df['Days_Since_Last_Sale'] = (today - df['Last_Sold_Date']).dt.days
+    df['Stock_Coverage'] = df['Stock_Quantity'] / df['Monthly_Usage']
+
+    return df
