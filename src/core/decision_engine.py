@@ -1,10 +1,11 @@
-from ..agents import ReorderAgent, ExpiryAgent, DeadStockAgent
+from ..agents import ReorderAgent, ExpiryAgent, DeadStockAgent, InventoryIntelligenceAgent
 
 # Initialize the agent suite
 inventory_agents = [
     ReorderAgent(),
     ExpiryAgent(),
-    DeadStockAgent()
+    DeadStockAgent(),
+    InventoryIntelligenceAgent()
 ]
 
 def evaluate_row(row):

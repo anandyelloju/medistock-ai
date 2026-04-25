@@ -8,5 +8,5 @@ EXPIRY_THRESHOLD_DAYS = 60
 DEAD_STOCK_DAYS = 180
 
 # Buffer added to the minimum stock level for reorder alerts (Warning Priority)
-# Set to 0 to maintain current behavior (reorder when below Min_Stock_Level)
-REORDER_BUFFER_DAYS = 0
+# Set to 10 to enable predictive alerts (reorder when 10 days of stock left)
+REORDER_BUFFER_DAYS = 10

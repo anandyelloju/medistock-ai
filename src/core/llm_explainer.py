@@ -15,6 +15,9 @@ def generate_explanation(row, alerts):
         elif alert['type'] == 'DEAD_STOCK':
             impact = "Capital tied up in non-moving stock, reducing liquidity."
             action = "Offer discounts or bundle with fast-moving items to liquidate."
+        elif alert['type'] == 'SMART_REORDER':
+            impact = "Predicted consumption trends indicate a stockout before the next standard cycle."
+            action = "Increase reorder quantity to match anticipated demand spikes."
         else:
             continue
 
