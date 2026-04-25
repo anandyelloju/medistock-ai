@@ -4,3 +4,4 @@ openai          # LLM Integration
 anthropic       # LLM Integration (Alternative)
 faiss-cpu       # Vector store for future RAG
 python-dotenv   # Environment variable management
+groq            # High-speed LLM inference
