@@ -1,5 +1,5 @@
 from .base_agent import BaseAgent
-from ..config import EXPIRY_THRESHOLD_DAYS
+from config.settings import EXPIRY_THRESHOLD_DAYS
 
 class ExpiryAgent(BaseAgent):
     """Priority 1: Critical - Detects items nearing expiry."""

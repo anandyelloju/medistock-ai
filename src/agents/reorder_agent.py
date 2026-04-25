@@ -1,5 +1,5 @@
 from .base_agent import BaseAgent
-from ..config import REORDER_BUFFER_DAYS
+from config.settings import REORDER_BUFFER_DAYS
 
 class ReorderAgent(BaseAgent):
     """Priority 2: Warning - Detects low stock levels."""

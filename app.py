@@ -1,8 +1,8 @@
 import streamlit as st
-from src.database_manager import DatabaseManager
-from src.data_processing import process_data
-from src.decision_engine import evaluate_row
-from src.llm_explainer import generate_explanation
+from src.data.database_manager import DatabaseManager
+from src.core.data_processing import process_data
+from src.core.decision_engine import evaluate_row
+from src.core.llm_explainer import generate_explanation
 
 # Initialize Database Manager
 db = DatabaseManager()

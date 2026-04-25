@@ -7,7 +7,7 @@ class DatabaseManager:
     Handles all SQLite database interactions for the MediStock AI system.
     Designed for efficiency and compatibility with pandas.
     """
-    def __init__(self, db_path='data/inventory.db'):
+    def __init__(self, db_path='database/inventory.db'):
         self.db_path = db_path
         
     def _execute_query(self, query, params=()):

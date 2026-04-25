@@ -1,4 +1,4 @@
-from .agents import ReorderAgent, ExpiryAgent, DeadStockAgent
+from ..agents import ReorderAgent, ExpiryAgent, DeadStockAgent
 
 # Initialize the agent suite
 inventory_agents = [

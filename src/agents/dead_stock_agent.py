@@ -1,5 +1,5 @@
 from .base_agent import BaseAgent
-from ..config import DEAD_STOCK_DAYS
+from config.settings import DEAD_STOCK_DAYS
 
 class DeadStockAgent(BaseAgent):
     """Priority 3: Info - Detects slow-moving inventory."""
