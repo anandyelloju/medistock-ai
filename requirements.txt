@@ -1,2 +1,6 @@
-pandas
-streamlit
+pandas          # Data manipulation
+streamlit       # Dashboard UI
+openai          # LLM Integration
+anthropic       # LLM Integration (Alternative)
+faiss-cpu       # Vector store for future RAG
+python-dotenv   # Environment variable management

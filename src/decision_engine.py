@@ -1,15 +1,36 @@
 from .agents import reorder_agent, expiry_agent, dead_stock_agent
 
 def evaluate_row(row):
-    decisions = []
+    """
+    Evaluates an inventory item and returns structured alerts with priority scores.
+    """
+    alerts = []
 
-    if reorder_agent(row):
-        decisions.append("Reorder Required")
+    # Reorder Check
+    res_type, res_prio = reorder_agent(row)
+    if res_type:
+        alerts.append({
+            "type": res_type,
+            "priority": res_prio,
+            "message": "Stock below minimum level."
+        })
 
-    if expiry_agent(row):
-        decisions.append("Near Expiry")
+    # Expiry Check
+    res_type, res_prio = expiry_agent(row)
+    if res_type:
+        alerts.append({
+            "type": res_type,
+            "priority": res_prio,
+            "message": "Item is approaching expiry date."
+        })
 
-    if dead_stock_agent(row):
-        decisions.append("No Sales - Risk")
+    # Dead Stock Check
+    res_type, res_prio = dead_stock_agent(row)
+    if res_type:
+        alerts.append({
+            "type": res_type,
+            "priority": res_prio,
+            "message": "No recent sales recorded (Dead Stock)."
+        })
 
-    return decisions
+    return alerts
