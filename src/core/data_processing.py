@@ -10,6 +10,14 @@ def process_data(df):
 
     df['Days_To_Expiry'] = (df['Expiry_Date'] - today).dt.days
     df['Days_Since_Last_Sale'] = (today - df['Last_Sold_Date']).dt.days
-    df['Stock_Coverage'] = df['Stock_Quantity'] / df['Monthly_Usage']
+    
+    # Demand Forecasting
+    df['Avg_Daily_Usage'] = df['Monthly_Usage'] / 30
+    
+    # Calculate days until stockout, handling zero usage cases
+    df['Days_Until_Stockout'] = df.apply(
+        lambda x: x['Stock_Quantity'] / x['Avg_Daily_Usage'] if x['Avg_Daily_Usage'] > 0 else 999,
+        axis=1
+    ).round(1)
 
     return df
