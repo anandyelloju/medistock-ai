@@ -42,6 +42,16 @@ col3.metric("Pending Reorders", pending_reorders)
 
 st.divider()
 
+# --- NEW: CRITICAL ACTIONS SECTION ---
+critical_df = df[df['alerts'].apply(lambda x: any(a['priority'] == 1 for a in x))]
+if not critical_df.empty:
+    st.subheader("🚨 Critical Actions")
+    for _, item in critical_df.iterrows():
+        # Get the primary critical alert message
+        p1_alert = [a for a in item['alerts'] if a['priority'] == 1][0]
+        st.warning(f"**{item['Item_Name']}**: {p1_alert['message']}")
+    st.divider()
+
 # Display Alerts with Priority
 st.subheader("Inventory Action Center")
 
@@ -53,16 +63,24 @@ for _, row in df.iterrows():
         alerts = [a for a in alerts if a['priority'] == 1]
     
     if alerts:
-        with st.expander(f"Analysis: {row['Item_Name']}"):
-            # Show individual priority alerts
-            for alert in alerts:
-                if alert['priority'] == 1:
-                    st.error(alert['message'])
-                elif alert['priority'] == 2:
-                    st.warning(alert['message'])
-                else:
-                    st.info(alert['message'])
-            
+        # Determine Primary Risk for Header
+        primary_alert = sorted(alerts, key=lambda x: x['priority'])[0]
+        header = f"{row['Item_Name']} — {primary_alert['type']}"
+        
+        with st.expander(header):
+            # Display Priority Status
+            if primary_alert['priority'] == 1:
+                st.error("Status: CRITICAL")
+            elif primary_alert['priority'] == 2:
+                st.warning("Status: WARNING")
+            else:
+                st.info("Status: MONITOR")
+
             # Generate and show structured explanation
             explanation = generate_explanation(row, alerts)
+            
+            # Format the LLM output into cleaner sections if it followed the format
             st.markdown(explanation)
+            
+            # Action Button Placeholder
+            st.button(f"Mark {row['Item_Name']} for Reorder", key=f"btn_{row['Item_ID']}")

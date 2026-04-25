@@ -32,12 +32,16 @@ def generate_explanation(row, alerts):
     {alert_info}
 
     Tasks:
-    1. Provide a concise explanation (max 3 lines) of the operational and financial impact.
-    2. Provide one highly specific, actionable recommendation.
+    1. **Situation**: Summarize the data-driven insight (1 line).
+    2. **Risk**: Describe the business impact (1-2 lines).
+    3. **Action**: Provide a clear, actionable next step.
+    4. **Confidence**: Assign a confidence level (High/Medium/Low).
 
     Format:
-    **Analysis**: [Explanation]
-    **Action**: [Recommendation]
+    **Situation**: [Insight]
+    **Risk**: [Impact]
+    **Action**: [Next Step]
+    **Confidence**: [Level]
     """
 
     try:
@@ -48,11 +52,11 @@ def generate_explanation(row, alerts):
         response = client.chat.completions.create(
             model="llama-3.1-8b-instant",
             messages=[
-                {"role": "system", "content": "You are a professional inventory management consultant."},
+                {"role": "system", "content": "You are a professional inventory management consultant. Keep responses concise and focused on action."},
                 {"role": "user", "content": prompt}
             ],
-            max_tokens=250,
-            temperature=0.2 # Lower temperature for more factual responses
+            max_tokens=300,
+            temperature=0.1
         )
         return response.choices[0].message.content
 
@@ -62,22 +66,30 @@ def generate_explanation(row, alerts):
 
 def _generate_fallback_explanation(row, alerts, error):
     """Fallback logic using rule-based templates if LLM fails."""
-    explanations = [f"⚠️ *Note: AI Analysis (Groq) Offline ({error})*"]
+    # Simplified fallback to match the new 3-section structure
+    primary_alert = alerts[0]
     
-    for alert in alerts:
-        if alert['type'] == 'REORDER':
-            impact = "Stock is below safe minimum level."
-            action = f"Reorder from {row.get('Supplier_Name', 'primary supplier')}."
-        elif alert['type'] == 'EXPIRY':
-            impact = "Item is nearing expiration date."
-            action = "Prioritize for immediate sale or return."
-        elif alert['type'] == 'SMART_REORDER':
-            impact = f"Predicted stockout in {row.get('Days_Until_Stockout', '?')} days."
-            action = "Increase reorder quantity to match demand spikes."
-        else:
-            impact = alert['message']
-            action = "Review inventory levels."
-            
-        explanations.append(f"**{alert['type']}**: {impact} -> {action}")
-        
-    return "\n\n".join(explanations)
+    if primary_alert['type'] == 'REORDER':
+        sit = "Stock levels are below the required minimum threshold."
+        risk = "Potential inability to fulfill immediate patient prescriptions."
+        act = f"Initiate reorder from {row.get('Supplier_Name', 'supplier')}."
+    elif primary_alert['type'] == 'SMART_REORDER':
+        sit = f"Current consumption rate predicts a stockout in {row.get('Days_Until_Stockout', '?')} days."
+        risk = "Consumption is outpacing standard supply replenishment cycles."
+        act = "Increase order volume immediately to cover the predicted gap."
+    elif primary_alert['type'] == 'EXPIRY':
+        sit = f"Item is approaching its expiration date ({row.get('Expiry_Date', '?')})."
+        risk = "Risk of total inventory value loss and disposal compliance issues."
+        act = "Move to front-of-shelf or contact supplier for return options."
+    else:
+        sit = primary_alert['message']
+        risk = "General inventory risk detected."
+        act = "Manual review required."
+
+    return (
+        f"⚠️ *Note: AI Analysis Offline ({error[:40]}...)*\n\n"
+        f"**Situation**: {sit}\n"
+        f"**Risk**: {risk}\n"
+        f"**Action**: {act}\n"
+        f"**Confidence**: Medium (Rule-based)"
+    )
