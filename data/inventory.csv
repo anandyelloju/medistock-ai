@@ -1,6 +1,0 @@
-Item_ID,Item_Name,Category,Stock_Quantity,Min_Stock_Level,Expiry_Date,Last_Sold_Date,Monthly_Usage,Cost_Per_Unit,Supplier_Name
-101,Paracetamol 500mg,Tablet,50,100,2026-06-15,2026-04-10,120,1.5,ABC Pharma
-102,Amoxicillin 250mg,Capsule,20,50,2026-05-20,2026-03-01,60,3.0,XYZ Pharma
-103,Cough Syrup,Syrup,10,30,2026-04-30,2025-12-15,15,2.5,HealthCorp
-104,Insulin Injection,Injection,5,20,2026-07-10,2026-04-18,25,15.0,MedLife
-105,Vitamin D Tablets,Tablet,200,100,2027-01-01,2025-10-01,10,0.8,Wellness Ltd

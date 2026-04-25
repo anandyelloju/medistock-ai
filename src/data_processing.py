@@ -1,12 +1,6 @@
 import pandas as pd
 from datetime import datetime
 
-def load_data(path):
-    df = pd.read_csv(path)
-    df['Expiry_Date'] = pd.to_datetime(df['Expiry_Date'])
-    df['Last_Sold_Date'] = pd.to_datetime(df['Last_Sold_Date'])
-    return df
-
 def process_data(df):
     # Ensure date columns are proper datetime objects (crucial for SQLite inputs)
     df['Expiry_Date'] = pd.to_datetime(df['Expiry_Date'])
