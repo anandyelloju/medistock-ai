@@ -1,11 +1,12 @@
-from ..agents import ReorderAgent, ExpiryAgent, DeadStockAgent, InventoryIntelligenceAgent
+from ..agents import ReorderAgent, ExpiryAgent, DeadStockAgent, InventoryIntelligenceAgent, ReorderExecutionAgent
 
 # Initialize the agent suite
 inventory_agents = [
     ReorderAgent(),
     ExpiryAgent(),
     DeadStockAgent(),
-    InventoryIntelligenceAgent()
+    InventoryIntelligenceAgent(),
+    ReorderExecutionAgent()
 ]
 
 def evaluate_row(row):
@@ -20,9 +21,10 @@ def evaluate_row(row):
         if alert:
             raw_alerts[alert['type']] = alert
 
-    # Override Logic: Smart reorder provides better context than basic reorder
-    if "SMART_REORDER" in raw_alerts and "REORDER" in raw_alerts:
-        # Keep the smart one as it has higher priority and better reasoning
-        del raw_alerts["REORDER"]
+    # Override Logic: Smart reorder and execution plans provide better context than basic reorder
+    if "REORDER" in raw_alerts:
+        if "SMART_REORDER" in raw_alerts or "EXECUTION_PLAN" in raw_alerts:
+            # Keep the advanced ones as they have higher priority and better reasoning
+            del raw_alerts["REORDER"]
 
     return list(raw_alerts.values())
