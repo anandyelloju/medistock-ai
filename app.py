@@ -70,17 +70,27 @@ for _, row in df.iterrows():
         with st.expander(header):
             # Display Priority Status
             if primary_alert['priority'] == 1:
-                st.error("Status: CRITICAL")
+                st.error("Status: CRITICAL RISK")
             elif primary_alert['priority'] == 2:
-                st.warning("Status: WARNING")
+                st.warning("Status: ACTION REQUIRED")
             else:
-                st.info("Status: MONITOR")
+                st.info("Status: MONITORING")
+
+            # --- NEW: EXECUTION PLAN SECTION ---
+            exec_plan = next((a for a in alerts if a['type'] == 'EXECUTION_PLAN'), None)
+            if exec_plan:
+                st.markdown("### 📦 Procurement Plan")
+                pcol1, pcol2 = st.columns(2)
+                pcol1.metric("Order Quantity", f"{exec_plan['reorder_qty']} units")
+                pcol2.info(f"**Urgency**: {exec_plan['urgency']}")
+                st.divider()
 
             # Generate and show structured explanation
             explanation = generate_explanation(row, alerts)
-            
-            # Format the LLM output into cleaner sections if it followed the format
             st.markdown(explanation)
             
-            # Action Button Placeholder
-            st.button(f"Mark {row['Item_Name']} for Reorder", key=f"btn_{row['Item_ID']}")
+            # Action Buttons
+            if exec_plan:
+                st.button("📄 Generate Purchase Order", key=f"po_{row['Item_ID']}", type="primary")
+            else:
+                st.button(f"Mark {row['Item_Name']} for Review", key=f"btn_{row['Item_ID']}")
