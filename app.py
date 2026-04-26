@@ -69,6 +69,24 @@ for _, row in df.iterrows():
         header = f"{row['Item_Name']} — {primary_alert['type']}"
         
         with st.expander(header):
+            # Fetch domain context
+            ctx = kb.get_medicine_context(row['Item_Name'])
+
+            # --- NEW: CONTEXTUAL INFO SECTION ---
+            ccol1, ccol2 = st.columns(2)
+            ccol1.write(f"📂 **Category**: {ctx['category']}")
+            
+            # Highlight criticality levels
+            crit_val = ctx['criticality']
+            if crit_val == 'Critical':
+                ccol2.write(f"⚖️ **Criticality**: 🔴 `{crit_val}`")
+            elif crit_val == 'High':
+                ccol2.write(f"⚖️ **Criticality**: 🟠 `{crit_val}`")
+            else:
+                ccol2.write(f"⚖️ **Criticality**: 🔵 `{crit_val}`")
+            
+            st.divider()
+
             # Display Priority Status
             if primary_alert['priority'] == 1:
                 st.error("Status: CRITICAL RISK")
@@ -85,9 +103,6 @@ for _, row in df.iterrows():
                 pcol1.metric("Order Quantity", f"{exec_plan['reorder_qty']} units")
                 pcol2.info(f"**Urgency**: {exec_plan['urgency']}")
                 st.divider()
-
-            # Fetch context for enrichment
-            ctx = kb.get_medicine_context(row['Item_Name'])
 
             # Generate and show structured explanation
             explanation = generate_explanation(row, alerts, context=ctx)
