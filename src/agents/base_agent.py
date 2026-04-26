@@ -10,6 +10,6 @@ class BaseAgent(ABC):
         self.priority = priority
 
     @abstractmethod
-    def evaluate(self, row):
-        """Processes a row of data and returns an alert dict or None."""
+    def evaluate(self, row, context=None):
+        """Processes a row of data with optional context and returns an alert dict or None."""
         pass

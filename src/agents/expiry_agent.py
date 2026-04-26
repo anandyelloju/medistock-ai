@@ -6,7 +6,7 @@ class ExpiryAgent(BaseAgent):
     def __init__(self):
         super().__init__("ExpiryAgent", 1)
 
-    def evaluate(self, row):
+    def evaluate(self, row, context=None):
         if row['Days_To_Expiry'] < EXPIRY_THRESHOLD_DAYS:
             return {
                 "type": "EXPIRY",

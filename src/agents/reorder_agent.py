@@ -6,7 +6,7 @@ class ReorderAgent(BaseAgent):
     def __init__(self):
         super().__init__("ReorderAgent", 2)
 
-    def evaluate(self, row):
+    def evaluate(self, row, context=None):
         if row['Stock_Quantity'] < (row['Min_Stock_Level'] + REORDER_BUFFER_DAYS):
             return {
                 "type": "REORDER",

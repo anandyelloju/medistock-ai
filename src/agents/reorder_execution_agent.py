@@ -10,14 +10,20 @@ class ReorderExecutionAgent(BaseAgent):
     def __init__(self):
         super().__init__("ReorderExecutionAgent", 2)
 
-    def evaluate(self, row):
+    def evaluate(self, row, context=None):
         # Only triggers if a stockout risk is detected (within buffer window)
         if row['Days_Until_Stockout'] < REORDER_BUFFER_DAYS:
             daily_usage = row.get('Avg_Daily_Usage', 0)
-            
+            seasonal_multiplier = 1.0
+            seasonal_note = ""
+
+            # Domain Knowledge Injection: Seasonality
+            if context and "High" in context.get('seasonal_info', ''):
+                seasonal_multiplier = 1.5 # Increase stock for peak seasons
+                seasonal_note = f" (Adjusted for {context['seasonal_info']} demand)"
+
             # 1. Calculate Reorder Quantity
-            # Formula: Cover the lead time plus the safety buffer
-            plan_qty = math.ceil(daily_usage * (LEAD_TIME_DAYS + SAFETY_BUFFER_DAYS))
+            plan_qty = math.ceil(daily_usage * (LEAD_TIME_DAYS + SAFETY_BUFFER_DAYS) * seasonal_multiplier)
             
             # 2. Determine Urgency Level
             if row['Days_Until_Stockout'] < LEAD_TIME_DAYS:
@@ -30,7 +36,7 @@ class ReorderExecutionAgent(BaseAgent):
             return {
                 "type": "EXECUTION_PLAN",
                 "priority": self.priority,
-                "message": f"Plan: Reorder {plan_qty} units. Urgency: {urgency}.",
+                "message": f"Plan: Reorder {plan_qty} units {seasonal_note}. Urgency: {urgency}.",
                 "reorder_qty": plan_qty,
                 "urgency": urgency
             }

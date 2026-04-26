@@ -6,7 +6,7 @@ class DeadStockAgent(BaseAgent):
     def __init__(self):
         super().__init__("DeadStockAgent", 3)
 
-    def evaluate(self, row):
+    def evaluate(self, row, context=None):
         if row['Days_Since_Last_Sale'] > DEAD_STOCK_DAYS:
             return {
                 "type": "DEAD_STOCK",

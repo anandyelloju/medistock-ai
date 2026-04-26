@@ -10,9 +10,16 @@ class InventoryIntelligenceAgent(BaseAgent):
     def __init__(self):
         super().__init__("InventoryIntelligenceAgent", 1)
 
-    def evaluate(self, row):
+    def evaluate(self, row, context=None):
         # Trigger if predicted stockout is within the buffer window
         if row['Days_Until_Stockout'] < REORDER_BUFFER_DAYS:
+            # Domain Knowledge Injection
+            priority = self.priority
+            criticality_note = ""
+            
+            if context and context.get('criticality') == 'Critical':
+                priority = 1 # Force Critical priority for life-saving meds
+                criticality_note = " [CRITICAL MEDICINE]"
             # Optimal Reorder Quantity Calculation
             # Formula: Avg Daily Usage * (Lead Time + Safety Buffer)
             daily_usage = row.get('Avg_Daily_Usage', 0)
@@ -23,8 +30,8 @@ class InventoryIntelligenceAgent(BaseAgent):
             
             return {
                 "type": "SMART_REORDER",
-                "priority": self.priority,
-                "message": f"Predicted stockout in {row['Days_Until_Stockout']} days. Recommended reorder: {suggested_qty} units.",
+                "priority": priority,
+                "message": f"Predicted stockout in {row['Days_Until_Stockout']} days.{criticality_note} Recommended reorder: {suggested_qty} units.",
                 "reorder_qty": suggested_qty
             }
         return None
