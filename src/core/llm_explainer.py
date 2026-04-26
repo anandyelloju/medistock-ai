@@ -9,10 +9,10 @@ load_dotenv()
 # Llama-3.1-8b-instant is used for high speed and low latency
 client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 
-def generate_explanation(row, alerts):
+def generate_explanation(row, alerts, context=None):
     """
     Generates a structured, actionable explanation using Groq (Llama 3.1).
-    Provides a professional fallback if the API is unavailable.
+    Enriched with domain context (Category, Criticality, Seasonality).
     """
     if not alerts:
         return ""
@@ -22,10 +22,18 @@ def generate_explanation(row, alerts):
     stock = row.get('Stock_Quantity', 0)
     stockout_days = row.get('Days_Until_Stockout', 'N/A')
     alert_info = "\n".join([f"- {a['type']}: {a['message']}" for a in alerts])
+    
+    # Domain Knowledge Enrichment
+    category = context.get('category', 'General') if context else 'General'
+    criticality = context.get('criticality', 'Medium') if context else 'Medium'
+    seasonal = context.get('seasonal_info', 'Steady') if context else 'Steady'
 
     prompt = f"""
     You are an expert Pharmacy Inventory Intelligence Agent. 
     Analyze these inventory alerts for '{item_name}':
+    - Category: {category}
+    - Criticality: {criticality}
+    - Seasonal Demand: {seasonal}
     - Current Stock: {stock} units
     - Predicted Stockout: {stockout_days} days
     - Active Alerts:
@@ -33,8 +41,8 @@ def generate_explanation(row, alerts):
 
     Tasks:
     1. **Situation**: Summarize the data-driven insight (1 line).
-    2. **Risk**: Describe the business impact (1-2 lines).
-    3. **Action**: Provide a clear, actionable next step.
+    2. **Risk**: Describe the business and clinical impact, considering the medicine's criticality.
+    3. **Action**: Provide a clear, actionable next step optimized for the current demand season.
     4. **Confidence**: Assign a confidence level (High/Medium/Low).
 
     Format:

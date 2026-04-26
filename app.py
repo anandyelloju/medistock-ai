@@ -3,6 +3,7 @@ from src.data.database_manager import DatabaseManager
 from src.core.data_processing import process_data
 from src.core.decision_engine import evaluate_row
 from src.core.llm_explainer import generate_explanation
+from src.data.knowledge_base import kb
 
 # Initialize Database Manager
 db = DatabaseManager()
@@ -85,8 +86,11 @@ for _, row in df.iterrows():
                 pcol2.info(f"**Urgency**: {exec_plan['urgency']}")
                 st.divider()
 
+            # Fetch context for enrichment
+            ctx = kb.get_medicine_context(row['Item_Name'])
+
             # Generate and show structured explanation
-            explanation = generate_explanation(row, alerts)
+            explanation = generate_explanation(row, alerts, context=ctx)
             st.markdown(explanation)
             
             # Action Buttons
