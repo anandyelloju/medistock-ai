@@ -1,0 +1,107 @@
+[
+  {
+    "medicine_name": "Paracetamol",
+    "category": "Painkiller",
+    "seasonal_demand": "Steady",
+    "criticality": "High",
+    "substitute_available": "Yes"
+  },
+  {
+    "medicine_name": "Amoxicillin",
+    "category": "Antibiotic",
+    "seasonal_demand": "High (Winter)",
+    "criticality": "High",
+    "substitute_available": "Yes"
+  },
+  {
+    "medicine_name": "Insulin Glargine",
+    "category": "Antidiabetic",
+    "seasonal_demand": "Steady",
+    "criticality": "Critical",
+    "substitute_available": "No"
+  },
+  {
+    "medicine_name": "Atorvastatin",
+    "category": "Statins",
+    "seasonal_demand": "Steady",
+    "criticality": "High",
+    "substitute_available": "Yes"
+  },
+  {
+    "medicine_name": "Ibuprofen",
+    "category": "NSAID",
+    "seasonal_demand": "Moderate",
+    "criticality": "Medium",
+    "substitute_available": "Yes"
+  },
+  {
+    "medicine_name": "Cetirizine",
+    "category": "Antihistamine",
+    "seasonal_demand": "High (Spring)",
+    "criticality": "Low",
+    "substitute_available": "Yes"
+  },
+  {
+    "medicine_name": "Metformin",
+    "category": "Antidiabetic",
+    "seasonal_demand": "Steady",
+    "criticality": "High",
+    "substitute_available": "Yes"
+  },
+  {
+    "medicine_name": "Salbutamol",
+    "category": "Bronchodilator",
+    "seasonal_demand": "High (Winter/Spring)",
+    "criticality": "Critical",
+    "substitute_available": "No"
+  },
+  {
+    "medicine_name": "Lisinopril",
+    "category": "ACE Inhibitor",
+    "seasonal_demand": "Steady",
+    "criticality": "High",
+    "substitute_available": "Yes"
+  },
+  {
+    "medicine_name": "Omeprazole",
+    "category": "Proton Pump Inhibitor",
+    "seasonal_demand": "Moderate",
+    "criticality": "Medium",
+    "substitute_available": "Yes"
+  },
+  {
+    "medicine_name": "Amlodipine",
+    "category": "Calcium Channel Blocker",
+    "seasonal_demand": "Steady",
+    "criticality": "High",
+    "substitute_available": "Yes"
+  },
+  {
+    "medicine_name": "Levothyroxine",
+    "category": "Thyroid Hormone",
+    "seasonal_demand": "Steady",
+    "criticality": "High",
+    "substitute_available": "No"
+  },
+  {
+    "medicine_name": "Azithromycin",
+    "category": "Antibiotic",
+    "seasonal_demand": "High (Winter)",
+    "criticality": "High",
+    "substitute_available": "Yes"
+  },
+  {
+    "medicine_name": "Warfarin",
+    "category": "Anticoagulant",
+    "seasonal_demand": "Steady",
+    "criticality": "Critical",
+    "substitute_available": "No"
+  },
+  {
+    "medicine_name": "Furosemide",
+    "category": "Diuretic",
+    "seasonal_demand": "Steady",
+    "criticality": "High",
+    "substitute_available": "Yes"
+  }
+]
