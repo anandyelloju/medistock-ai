@@ -1,7 +1,24 @@
-pandas          # Data manipulation
-streamlit       # Dashboard UI
-openai          # LLM Integration
-anthropic       # LLM Integration (Alternative)
-faiss-cpu       # Vector store for future RAG
-python-dotenv   # Environment variable management
-groq            # High-speed LLM inference
+# MediStock AI — Production Dependencies
+
+# Core Framework
+streamlit==1.56.0
+fastapi==0.133.1
+uvicorn==0.42.0
+
+# Data Processing
+pandas==3.0.1
+numpy==2.4.4
+
+# Database
+SQLAlchemy==2.0.48
+
+# LLM
+groq==0.37.1
+
+# HTTP & Utilities
+httpx==0.28.1
+python-dotenv==1.0.1
+requests==2.33.1
+
+# API Validation
+pydantic==2.12.1

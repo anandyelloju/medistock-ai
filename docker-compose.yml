@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  medistock-ui:
+    build: .
+    ports:
+      - "8501:8501"
+    env_file:
+      - .env
+    command: streamlit run app.py --server.port=8501 --server.address=0.0.0.0
+    volumes:
+      - ./database:/app/database
+
+  medistock-api:
+    build: .
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    command: uvicorn src.api.main:app --host 0.0.0.0 --port 8000
+    volumes:
+      - ./database:/app/database
