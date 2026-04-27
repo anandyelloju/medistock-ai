@@ -39,6 +39,17 @@ class ActionExecutionAgent(BaseAgent):
         # Trigger Criteria: Only for CRITICAL or HIGH urgency
         if "CRITICAL" in urgency or "HIGH" in urgency:
             
+            # Check if Automation is Enabled in UI
+            if not context.automation_enabled:
+                alert = {
+                    "type": "ACTION_LOG",
+                    "priority": 2,
+                    "status": "PENDING",
+                    "message": f"⏳ Automation OFF: {medicine_name} requires a Purchase Order via {supplier_name}."
+                }
+                context.actions["ACTION_LOG"] = alert
+                return alert
+
             # 1. Memory-based Deduplication (Current Session)
             if medicine_name in self.executed_items:
                 alert = {

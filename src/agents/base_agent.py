@@ -5,9 +5,10 @@ class SharedContext:
     A unified communication object passed between agents during orchestration.
     Enables decoupled data exchange between Analysis, Decision, and Execution layers.
     """
-    def __init__(self, inventory_data, domain_knowledge=None):
+    def __init__(self, inventory_data, domain_knowledge=None, automation_enabled=False):
         self.inventory_data = inventory_data
         self.domain_knowledge = domain_knowledge or {}
+        self.automation_enabled = automation_enabled
         self.risk_flags = {}  # Written by 'analysis' agents
         self.decisions = {}   # Written by 'decision' agents
         self.actions = {}     # Written by 'execution' agents

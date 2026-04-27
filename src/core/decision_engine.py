@@ -19,7 +19,7 @@ agents_suite = [
 # Initialize the Coordinator
 coordinator = CoordinatorAgent(agents_suite)
 
-def evaluate_row(row):
+def evaluate_row(row, automation_enabled=False):
     """
     Evaluates an inventory item using the Coordinator Agent orchestration.
     Returns the full SharedContext for UI visualization.
@@ -28,4 +28,8 @@ def evaluate_row(row):
     context = kb.get_medicine_context(row['Item_Name'])
 
     # Initialize context and orchestrate
-    return coordinator.orchestrate_with_context(row, domain_knowledge=context)
+    return coordinator.orchestrate_with_context(
+        row, 
+        domain_knowledge=context, 
+        automation_enabled=automation_enabled
+    )

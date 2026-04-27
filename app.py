@@ -18,6 +18,7 @@ df = process_data(df)
 # Sidebar Configuration
 st.sidebar.header("🛠️ Settings")
 show_critical_only = st.sidebar.checkbox("Show Only Critical Alerts", value=False)
+automation_on = st.sidebar.toggle("🤖 Automation Mode", value=False, help="When ON, system will auto-generate and email Purchase Orders.")
 
 st.sidebar.divider()
 st.sidebar.subheader("📈 System Learning")
@@ -55,7 +56,7 @@ st.title("💊 MediStock AI Dashboard")
 total_value = (df['Stock_Quantity'] * df['Cost_Per_Unit']).sum()
 
 # Pre-evaluate context for all rows to calculate KPIs
-df['execution_context'] = df.apply(lambda row: evaluate_row(row), axis=1)
+df['execution_context'] = df.apply(lambda row: evaluate_row(row, automation_enabled=automation_on), axis=1)
 df['alerts'] = df['execution_context'].apply(lambda ctx: ctx.get_all_alerts())
 
 # KPI: Expiry Risk Value (Sum of cost for items with Priority 1 alerts)
