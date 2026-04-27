@@ -38,8 +38,9 @@ st.title("💊 MediStock AI Dashboard")
 # KPI Calculations
 total_value = (df['Stock_Quantity'] * df['Cost_Per_Unit']).sum()
 
-# Pre-evaluate alerts for all rows to calculate KPIs
-df['alerts'] = df.apply(lambda row: evaluate_row(row), axis=1)
+# Pre-evaluate context for all rows to calculate KPIs
+df['execution_context'] = df.apply(lambda row: evaluate_row(row), axis=1)
+df['alerts'] = df['execution_context'].apply(lambda ctx: ctx.get_all_alerts())
 
 # KPI: Expiry Risk Value (Sum of cost for items with Priority 1 alerts)
 expiry_risk_value = df[df['alerts'].apply(lambda x: any(a['priority'] == 1 for a in x))].apply(
@@ -78,20 +79,48 @@ for _, row in df.iterrows():
         alerts = [a for a in alerts if a['priority'] == 1]
     
     if alerts:
+        # Get execution context
+        full_ctx = row['execution_context']
+        
         # Determine Primary Risk for Header
         primary_alert = sorted(alerts, key=lambda x: x['priority'])[0]
         header = f"{row['Item_Name']} — {primary_alert['type']}"
         
         with st.expander(header):
-            # Fetch domain context
-            ctx = kb.get_medicine_context(row['Item_Name'])
+            # --- NEW: WORKFLOW VISUALIZATION ---
+            st.caption("🤖 **Agent Orchestration Flow**")
+            w1, w2, w3 = st.columns(3)
+            
+            with w1:
+                st.markdown("🔍 **Analysis**")
+                for a in full_ctx.risk_flags.values():
+                    st.caption(f"• {a['type']}")
+            with w2:
+                if full_ctx.decisions:
+                    st.markdown("🧠 **Decision**")
+                    for a in full_ctx.decisions.values():
+                        st.caption(f"• {a['type']}")
+                else:
+                    st.caption("*(Skipped)*")
+            with w3:
+                if full_ctx.actions:
+                    st.markdown("⚡ **Execution**")
+                    for a in full_ctx.actions.values():
+                        st.caption(f"• {a['status']}")
+                else:
+                    st.caption("*(Skipped)*")
+            
+            st.divider()
 
-            # --- NEW: CONTEXTUAL INFO SECTION ---
+            # Domain knowledge from context
+            ctx = full_ctx.domain_knowledge
+
+            # --- CONTEXTUAL INFO SECTION ---
             ccol1, ccol2 = st.columns(2)
-            ccol1.write(f"📂 **Category**: {ctx['category']}")
+            ccol1.write(f"📂 **Category**: {ctx.get('category', 'N/A')}")
             
             # Highlight criticality levels
-            crit_val = ctx['criticality']
+            crit_val = ctx.get('criticality', 'Medium')
             if crit_val == 'Critical':
                 ccol2.write(f"⚖️ **Criticality**: 🔴 `{crit_val}`")
             elif crit_val == 'High':

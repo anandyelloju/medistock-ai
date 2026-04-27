@@ -13,8 +13,13 @@ class CoordinatorAgent:
         self.execution_agents = [a for a in agents if a.role == 'execution']
 
     def orchestrate(self, row, domain_knowledge=None):
+        """Returns only the alerts (for backward compatibility)."""
+        ctx = self.orchestrate_with_context(row, domain_knowledge)
+        return ctx.get_all_alerts()
+
+    def orchestrate_with_context(self, row, domain_knowledge=None):
         """
-        Executes a dynamic, dependency-aware workflow using SharedContext.
+        Executes a dynamic, dependency-aware workflow and returns the full context.
         """
         # Initialize Shared Context
         ctx = SharedContext(inventory_data=row, domain_knowledge=domain_knowledge)
@@ -39,4 +44,6 @@ class CoordinatorAgent:
                 agent.evaluate(ctx)
                 executed_agent_names.add(agent.name)
 
-        return ctx.get_all_alerts()
+        # Attach execution trace for UI
+        ctx.executed_agents = list(executed_agent_names)
+        return ctx
