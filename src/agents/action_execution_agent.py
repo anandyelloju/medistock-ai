@@ -1,5 +1,6 @@
 from .base_agent import BaseAgent
 from ..core.action_manager import generate_purchase_order
+from ..core.email_manager import send_purchase_order_email
 from ..data.database_manager import DatabaseManager
 import logging
 import os
@@ -61,20 +62,24 @@ class ActionExecutionAgent(BaseAgent):
                 self.executed_items.add(medicine_name)
                 logger.info(f"SUCCESS: Generated Purchase Order for {medicine_name} at {file_path}")
                 
+                # 3. Email Dispatch
+                email_status = send_purchase_order_email(file_path)
+                email_note = " and dispatched via email" if email_status else " (Email dispatch skipped/failed)"
+                
                 # Persistent DB Logging
                 self.db.log_action(
                     medicine_name=medicine_name,
                     quantity=plan.get('reorder_qty', 0),
                     action_type="PO_GENERATION",
                     status="SUCCESS",
-                    details=file_path
+                    details=f"{file_path} | Email: {email_status}"
                 )
                 
                 alert = {
                     "type": "ACTION_LOG",
                     "priority": 3, # Info level for logs
                     "status": "EXECUTED",
-                    "message": f"✅ Purchase Order generated for {medicine_name}.",
+                    "message": f"✅ Purchase Order generated for {medicine_name}{email_note}.",
                     "file_path": file_path
                 }
                 context.actions["ACTION_LOG"] = alert
