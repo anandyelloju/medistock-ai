@@ -35,9 +35,37 @@ class DatabaseManager:
             query = "SELECT * FROM inventory WHERE Stock_Quantity < Min_Stock_Level"
             return self._execute_query(query)
 
-    def get_near_expiry(self, days=60):
-        """Fetches items expiring within the specified number of days."""
-        # SQLite date comparison
-        query = "SELECT * FROM inventory WHERE Expiry_Date <= date('now', ?)"
-        param = f"+{days} days"
-        return self._execute_query(query, params=(param,))
+    def log_action(self, medicine_name, quantity, action_type, status, details=None):
+        """
+        Logs an automated action (e.g., PO generation) into the SQLite database.
+        Creates the 'action_logs' table if it does not already exist.
+        """
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            # Ensure logs table exists
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS action_logs (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    medicine_name TEXT,
+                    quantity INTEGER,
+                    action_type TEXT,
+                    status TEXT,
+                    details TEXT,
+                    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+                )
+            """)
+            # Insert log entry
+            cursor.execute("""
+                INSERT INTO action_logs (medicine_name, quantity, action_type, status, details)
+                VALUES (?, ?, ?, ?, ?)
+            """, (medicine_name, quantity, action_type, status, details))
+            conn.commit()
+
+    def get_action_logs(self, limit=10):
+        """Fetches the most recent action logs."""
+        query = "SELECT * FROM action_logs ORDER BY timestamp DESC LIMIT ?"
+        try:
+            return self._execute_query(query, params=(limit,))
+        except Exception:
+            # If table doesn't exist yet, return an empty DataFrame with correct columns
+            return pd.DataFrame(columns=['id', 'medicine_name', 'quantity', 'action_type', 'status', 'details', 'timestamp'])

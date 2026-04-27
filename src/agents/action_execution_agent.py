@@ -1,5 +1,6 @@
 from .base_agent import BaseAgent
 from ..core.action_manager import generate_purchase_order
+from ..data.database_manager import DatabaseManager
 import logging
 import os
 from datetime import datetime
@@ -16,6 +17,7 @@ class ActionExecutionAgent(BaseAgent):
     def __init__(self):
         super().__init__("ActionExecutionAgent", 1)
         self.executed_items = set() # Simple deduplication in memory for current session
+        self.db = DatabaseManager()
 
     def evaluate(self, row, context=None, plan=None):
         """
@@ -66,6 +68,15 @@ class ActionExecutionAgent(BaseAgent):
                 self.executed_items.add(medicine_name)
                 logger.info(f"SUCCESS: Generated Purchase Order for {medicine_name} at {file_path}")
                 
+                # Persistent DB Logging
+                self.db.log_action(
+                    medicine_name=medicine_name,
+                    quantity=plan.get('reorder_qty', 0),
+                    action_type="PO_GENERATION",
+                    status="SUCCESS",
+                    details=file_path
+                )
+                
                 return {
                     "type": "ACTION_LOG",
                     "priority": 3, # Info level for logs
@@ -75,6 +86,16 @@ class ActionExecutionAgent(BaseAgent):
                 }
             else:
                 logger.error(f"FAILURE: Could not generate Purchase Order for {medicine_name}")
+                
+                # Persistent DB Logging
+                self.db.log_action(
+                    medicine_name=medicine_name,
+                    quantity=plan.get('reorder_qty', 0),
+                    action_type="PO_GENERATION",
+                    status="FAILURE",
+                    details="File system error"
+                )
+                
                 return {
                     "type": "ACTION_LOG",
                     "priority": 1, # Critical if execution fails

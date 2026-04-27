@@ -19,6 +19,20 @@ df = process_data(df)
 st.sidebar.header("🛠️ Settings")
 show_critical_only = st.sidebar.checkbox("Show Only Critical Alerts", value=False)
 
+st.sidebar.divider()
+st.sidebar.subheader("📜 Recent Activity")
+try:
+    recent_logs = db.get_action_logs(limit=5)
+    if not recent_logs.empty:
+        for _, log in recent_logs.iterrows():
+            status_icon = "✅" if log['status'] == "SUCCESS" else "❌"
+            st.sidebar.caption(f"{status_icon} **{log['medicine_name']}**")
+            st.sidebar.caption(f"Qty: {log['quantity']} | {log['timestamp']}")
+    else:
+        st.sidebar.info("No recent actions logged.")
+except Exception:
+    st.sidebar.info("Logging system initializing...")
+
 st.title("💊 MediStock AI Dashboard")
 
 # KPI Calculations
