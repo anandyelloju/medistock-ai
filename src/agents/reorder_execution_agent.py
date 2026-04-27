@@ -1,6 +1,7 @@
 from .base_agent import BaseAgent
 from ..data.database_manager import DatabaseManager
 from ..core.adaptive_optimizer import AdaptiveOptimizer
+from ..core.supplier_manager import SupplierManager
 from config.settings import REORDER_BUFFER_DAYS, LEAD_TIME_DAYS, SAFETY_BUFFER_DAYS
 import math
 
@@ -48,12 +49,20 @@ class ReorderExecutionAgent(BaseAgent):
             else:
                 urgency = "NORMAL"
 
+            # 3. Intelligent Supplier Selection
+            supplier_info = SupplierManager.get_best_supplier(
+                row['Item_Name'], 
+                kb_ctx.get('category', 'Default'), 
+                urgency
+            )
+
             alert = {
                 "type": "EXECUTION_PLAN",
                 "priority": self.priority,
-                "message": f"Plan: Reorder {plan_qty} units {seasonal_note}{tuning_note}. Urgency: {urgency}.",
+                "message": f"Plan: Reorder {plan_qty} units {seasonal_note}{tuning_note}. Supplier: {supplier_info['supplier_name']} ({supplier_info['selection_reason']})",
                 "reorder_qty": plan_qty,
-                "urgency": urgency
+                "urgency": urgency,
+                "supplier": supplier_info['supplier_name']
             }
             
             # Persistent Decision Tracking
