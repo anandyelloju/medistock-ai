@@ -104,12 +104,30 @@ for _, row in df.iterrows():
                 pcol2.info(f"**Urgency**: {exec_plan['urgency']}")
                 st.divider()
 
+            # --- NEW: ACTION EXECUTION LOG SECTION ---
+            action_log = next((a for a in alerts if a['type'] == 'ACTION_LOG'), None)
+            if action_log:
+                if action_log['status'] == 'EXECUTED':
+                    st.success(action_log['message'])
+                    st.caption(f"💾 Saved to: {action_log['file_path']}")
+                elif action_log['status'] == 'FAILED':
+                    st.error(action_log['message'])
+                else:
+                    st.info(action_log['message'])
+                st.divider()
+
             # Generate and show structured explanation
             explanation = generate_explanation(row, alerts, context=ctx)
             st.markdown(explanation)
             
             # Action Buttons
-            if exec_plan:
-                st.button("📄 Generate Purchase Order", key=f"po_{row['Item_ID']}", type="primary")
+            if exec_plan and not action_log:
+                # Show the button if a plan exists but hasn't been executed yet
+                if st.button("📄 Generate Purchase Order", key=f"po_{row['Item_ID']}", type="primary"):
+                    # In a real app, this would trigger the Action Manager directly
+                    # For this simulation, the Action Agent has already run in the background
+                    st.rerun()
+            elif action_log and action_log['status'] == 'EXECUTED':
+                st.button("✅ Order Processed", key=f"done_{row['Item_ID']}", disabled=True)
             else:
                 st.button(f"Mark {row['Item_Name']} for Review", key=f"btn_{row['Item_ID']}")
