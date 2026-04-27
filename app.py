@@ -20,6 +20,22 @@ st.sidebar.header("🛠️ Settings")
 show_critical_only = st.sidebar.checkbox("Show Only Critical Alerts", value=False)
 
 st.sidebar.divider()
+st.sidebar.subheader("📈 System Learning")
+success_rate = db.get_success_rate()
+st.sidebar.metric("AI Accuracy", f"{success_rate:.1f}%", delta="Adaptive")
+
+try:
+    perf_logs = db.get_all_performance_logs(limit=3)
+    if not perf_logs.empty:
+        for _, log in perf_logs.iterrows():
+            score_icon = "🟢" if log['score'] == "GOOD" else "🟡" if log['score'] == "AVERAGE" else "🔴"
+            st.sidebar.caption(f"{score_icon} **{log['medicine_name']}**: {log['score']}")
+    else:
+        st.sidebar.caption("System gathering feedback...")
+except Exception:
+    st.sidebar.caption("Evaluation layer starting...")
+
+st.sidebar.divider()
 st.sidebar.subheader("📜 Recent Activity")
 try:
     recent_logs = db.get_action_logs(limit=5)

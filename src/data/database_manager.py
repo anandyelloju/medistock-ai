@@ -137,5 +137,27 @@ class DatabaseManager:
         """
         try:
             return self._execute_query(query, params=(medicine_name, limit))
+    def get_all_performance_logs(self, limit=10):
+        """Fetches all performance evaluation logs."""
+        query = """
+            SELECT p.*, d.medicine_name FROM performance_logs p
+            JOIN decision_logs d ON p.decision_id = d.id
+            ORDER BY p.eval_timestamp DESC
+            LIMIT ?
+        """
+        try:
+            return self._execute_query(query, params=(limit,))
         except Exception:
             return pd.DataFrame()
+
+    def get_success_rate(self):
+        """Calculates the percentage of GOOD scores."""
+        query = "SELECT score FROM performance_logs"
+        try:
+            df = self._execute_query(query)
+            if df.empty:
+                return 0
+            good_count = len(df[df['score'] == 'GOOD'])
+            return (good_count / len(df)) * 100
+        except Exception:
+            return 0
