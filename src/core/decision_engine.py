@@ -1,7 +1,7 @@
 from ..agents import (
     ReorderAgent, ExpiryAgent, DeadStockAgent, 
     InventoryIntelligenceAgent, ReorderExecutionAgent, 
-    ActionExecutionAgent, CoordinatorAgent
+    ActionExecutionAgent, CoordinatorAgent, SupplierSelectionAgent
 )
 from ..data.knowledge_base import kb
 
@@ -11,6 +11,7 @@ agents_suite = [
     DeadStockAgent(),
     InventoryIntelligenceAgent(),
     ReorderExecutionAgent(),
+    SupplierSelectionAgent(),
     ActionExecutionAgent(),
     ReorderAgent()
 ]

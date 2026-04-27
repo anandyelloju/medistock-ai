@@ -49,20 +49,12 @@ class ReorderExecutionAgent(BaseAgent):
             else:
                 urgency = "NORMAL"
 
-            # 3. Intelligent Supplier Selection
-            supplier_info = SupplierManager.get_best_supplier(
-                row['Item_Name'], 
-                kb_ctx.get('category', 'Default'), 
-                urgency
-            )
-
             alert = {
                 "type": "EXECUTION_PLAN",
                 "priority": self.priority,
-                "message": f"Plan: Reorder {plan_qty} units {seasonal_note}{tuning_note}. Supplier: {supplier_info['supplier_name']} ({supplier_info['selection_reason']})",
+                "message": f"Plan: Reorder {plan_qty} units {seasonal_note}{tuning_note}. Urgency: {urgency}.",
                 "reorder_qty": plan_qty,
-                "urgency": urgency,
-                "supplier": supplier_info['supplier_name']
+                "urgency": urgency
             }
             
             # Persistent Decision Tracking
