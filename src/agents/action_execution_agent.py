@@ -16,22 +16,24 @@ class ActionExecutionAgent(BaseAgent):
     Responsible for generating formal Purchase Orders for high-urgency items.
     """
     def __init__(self):
-        super().__init__("ActionExecutionAgent", "execution", 1, dependencies=["ReorderExecutionAgent"])
+        super().__init__("ActionExecutionAgent", "execution", 1, dependencies=["SupplierSelectionAgent"])
         self.executed_items = set() # Simple deduplication in memory for current session
         self.db = DatabaseManager()
 
     def evaluate(self, context):
         """
         Executes an action plan if it meets high-urgency criteria.
-        Read plan from context.decisions.
+        Read plan and supplier selection from context.decisions.
         """
         row = context.inventory_data
         plan = context.decisions.get('EXECUTION_PLAN')
+        selection = context.decisions.get('SUPPLIER_SELECTION')
 
-        if not plan:
+        if not plan or not selection:
             return None
 
         medicine_name = row['Item_Name']
+        supplier_name = selection.get('supplier', 'Unknown Supplier')
         urgency = plan.get('urgency', '')
 
         # Trigger Criteria: Only for CRITICAL or HIGH urgency
@@ -52,7 +54,8 @@ class ActionExecutionAgent(BaseAgent):
             po_plan = {
                 "medicine": medicine_name,
                 "reorder_qty": plan.get('reorder_qty', 0),
-                "urgency": urgency
+                "urgency": urgency,
+                "supplier": supplier_name
             }
 
             # Execute: Generate PO
@@ -60,7 +63,7 @@ class ActionExecutionAgent(BaseAgent):
 
             if file_path:
                 self.executed_items.add(medicine_name)
-                logger.info(f"SUCCESS: Generated Purchase Order for {medicine_name} at {file_path}")
+                logger.info(f"SUCCESS: Generated PO for {medicine_name} via {supplier_name} at {file_path}")
                 
                 # 3. Email Dispatch
                 email_status = send_purchase_order_email(file_path)
@@ -72,14 +75,14 @@ class ActionExecutionAgent(BaseAgent):
                     quantity=plan.get('reorder_qty', 0),
                     action_type="PO_GENERATION",
                     status="SUCCESS",
-                    details=f"{file_path} | Email: {email_status}"
+                    details=f"Supplier: {supplier_name} | File: {file_path} | Email: {email_status}"
                 )
                 
                 alert = {
                     "type": "ACTION_LOG",
                     "priority": 3, # Info level for logs
                     "status": "EXECUTED",
-                    "message": f"✅ Purchase Order generated for {medicine_name}{email_note}.",
+                    "message": f"✅ PO generated for {medicine_name} via {supplier_name}{email_note}.",
                     "file_path": file_path
                 }
                 context.actions["ACTION_LOG"] = alert
