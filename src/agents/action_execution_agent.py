@@ -15,7 +15,7 @@ class ActionExecutionAgent(BaseAgent):
     Responsible for generating formal Purchase Orders for high-urgency items.
     """
     def __init__(self):
-        super().__init__("ActionExecutionAgent", 1)
+        super().__init__("ActionExecutionAgent", "execution", 1, dependencies=["ReorderExecutionAgent"])
         self.executed_items = set() # Simple deduplication in memory for current session
         self.db = DatabaseManager()
 

@@ -8,7 +8,7 @@ class ReorderExecutionAgent(BaseAgent):
     Calculates optimal order quantities and determines procurement urgency based on lead times.
     """
     def __init__(self):
-        super().__init__("ReorderExecutionAgent", 2)
+        super().__init__("ReorderExecutionAgent", "decision", 2, dependencies=["InventoryIntelligenceAgent"])
 
     def evaluate(self, row, context=None):
         # Only triggers if a stockout risk is detected (within buffer window)

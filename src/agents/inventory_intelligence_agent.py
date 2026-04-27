@@ -8,7 +8,7 @@ class InventoryIntelligenceAgent(BaseAgent):
     and calculates optimal reorder quantities.
     """
     def __init__(self):
-        super().__init__("InventoryIntelligenceAgent", 1)
+        super().__init__("InventoryIntelligenceAgent", "analysis", 1)
 
     def evaluate(self, row, context=None):
         # Trigger if predicted stockout is within the buffer window
