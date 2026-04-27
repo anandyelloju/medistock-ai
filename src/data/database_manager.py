@@ -97,4 +97,34 @@ class DatabaseManager:
                     INSERT INTO decision_logs (medicine_name, stockout_days, reorder_qty)
                     VALUES (?, ?, ?)
                 """, (medicine_name, stockout_days, reorder_qty))
-                conn.commit()
+    def log_performance_eval(self, decision_id, score, comment):
+        """Logs the performance score of a past decision."""
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS performance_logs (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    decision_id INTEGER,
+                    score TEXT,
+                    comment TEXT,
+                    eval_timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+                    FOREIGN KEY(decision_id) REFERENCES decision_logs(id)
+                )
+            """)
+            cursor.execute("""
+                INSERT INTO performance_logs (decision_id, score, comment)
+                VALUES (?, ?, ?)
+            """, (decision_id, score, comment))
+            conn.commit()
+
+    def get_pending_evaluations(self):
+        """Fetches decisions that haven't been evaluated yet."""
+        query = """
+            SELECT d.* FROM decision_logs d
+            LEFT JOIN performance_logs p ON d.id = p.decision_id
+            WHERE p.id IS NULL
+        """
+        try:
+            return self._execute_query(query)
+        except Exception:
+            return pd.DataFrame()

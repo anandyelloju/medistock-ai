@@ -6,5 +6,6 @@ from .inventory_intelligence_agent import InventoryIntelligenceAgent
 from .reorder_execution_agent import ReorderExecutionAgent
 from .action_execution_agent import ActionExecutionAgent
 from .coordinator_agent import CoordinatorAgent
+from .performance_evaluation_agent import PerformanceEvaluationAgent
 
-__all__ = ["BaseAgent", "ReorderAgent", "ExpiryAgent", "DeadStockAgent", "InventoryIntelligenceAgent", "ReorderExecutionAgent", "ActionExecutionAgent", "CoordinatorAgent"]
+__all__ = ["BaseAgent", "ReorderAgent", "ExpiryAgent", "DeadStockAgent", "InventoryIntelligenceAgent", "ReorderExecutionAgent", "ActionExecutionAgent", "CoordinatorAgent", "PerformanceEvaluationAgent"]
