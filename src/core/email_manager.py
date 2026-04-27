@@ -5,10 +5,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.base import MIMEBase
 from email import encoders
-from dotenv import load_dotenv
-
-# Initialize Environment
-load_dotenv()
+from .config import Config
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -17,16 +14,16 @@ logger = logging.getLogger("EmailManager")
 def send_purchase_order_email(file_path, recipient_email=None):
     """
     Sends a Purchase Order CSV as an email attachment.
-    Uses SMTP credentials from environment variables.
+    Uses SMTP credentials from centralized config.
     """
-    # 1. Configuration from Environment
-    smtp_server = os.getenv("SMTP_SERVER", "smtp.gmail.com")
-    smtp_port = int(os.getenv("SMTP_PORT", 587))
-    smtp_user = os.getenv("SMTP_USER")
-    smtp_pass = os.getenv("SMTP_PASS")
+    # 1. Configuration from Centralized Config
+    smtp_server = Config.SMTP_SERVER
+    smtp_port = Config.SMTP_PORT
+    smtp_user = Config.SMTP_USER
+    smtp_pass = Config.SMTP_PASS
     
     # Recipient: Use provided email or fallback to default supplier email
-    to_email = recipient_email or os.getenv("SUPPLIER_EMAIL")
+    to_email = recipient_email or Config.SUPPLIER_EMAIL
 
     if not all([smtp_user, smtp_pass, to_email]):
         logger.warning("Email credentials or recipient missing. Skipping email dispatch.")

@@ -1,15 +1,12 @@
 from groq import Groq
-from dotenv import load_dotenv
 from ..data.database_manager import DatabaseManager
-
-# Initialize Environment
-load_dotenv()
+from .config import Config
 
 # Initialize Database Manager
 db = DatabaseManager()
 
-# Initialize Groq client
-client = Groq(api_key=os.getenv("GROQ_API_KEY"))
+# Initialize Groq client using centralized config
+client = Groq(api_key=Config.GROQ_API_KEY)
 
 def generate_explanation(row, alerts, context=None):
     """

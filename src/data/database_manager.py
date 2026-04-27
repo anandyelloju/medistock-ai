@@ -1,23 +1,28 @@
 import sqlite3
 import pandas as pd
 import os
+from .config import Config
 
 class DatabaseManager:
     """
     Handles all SQLite database interactions for the MediStock AI system.
     Designed for efficiency and compatibility with pandas.
     """
-    def __init__(self, db_path='database/inventory.db'):
+    def __init__(self, db_path=Config.DB_PATH):
         self.db_path = db_path
         
     def _execute_query(self, query, params=()):
         """Internal helper to run queries and return a DataFrame."""
         if not os.path.exists(self.db_path):
-            raise FileNotFoundError(f"Database not found at {self.db_path}. Please run migration first.")
+            # Create the database directory if it doesn't exist
+            os.makedirs(os.path.dirname(self.db_path), exist_ok=True)
             
         with sqlite3.connect(self.db_path) as conn:
             # We return a DataFrame as it's most efficient for Streamlit and data processing
-            return pd.read_sql_query(query, conn, params=params)
+            try:
+                return pd.read_sql_query(query, conn, params=params)
+            except Exception:
+                return pd.DataFrame()
 
     def get_all_inventory(self):
         """Fetches the entire inventory table."""
@@ -64,11 +69,8 @@ class DatabaseManager:
     def get_action_logs(self, limit=10):
         """Fetches the most recent action logs."""
         query = "SELECT * FROM action_logs ORDER BY timestamp DESC LIMIT ?"
-        try:
-            return self._execute_query(query, params=(limit,))
-        except Exception:
-            # If table doesn't exist yet, return an empty DataFrame with correct columns
-            return pd.DataFrame(columns=['id', 'medicine_name', 'quantity', 'action_type', 'status', 'details', 'timestamp'])
+        return self._execute_query(query, params=(limit,))
+
     def log_decision(self, medicine_name, stockout_days, reorder_qty):
         """
         Logs a reorder decision into the SQLite database.
@@ -97,6 +99,8 @@ class DatabaseManager:
                     INSERT INTO decision_logs (medicine_name, stockout_days, reorder_qty)
                     VALUES (?, ?, ?)
                 """, (medicine_name, stockout_days, reorder_qty))
+                conn.commit()
+
     def log_performance_eval(self, decision_id, score, comment):
         """Logs the performance score of a past decision."""
         with sqlite3.connect(self.db_path) as conn:
@@ -124,8 +128,8 @@ class DatabaseManager:
             LEFT JOIN performance_logs p ON d.id = p.decision_id
             WHERE p.id IS NULL
         """
-        try:
-            return self._execute_query(query)
+        return self._execute_query(query)
+
     def get_performance_history(self, medicine_name, limit=5):
         """Fetches the performance history for a specific medicine."""
         query = """
@@ -135,8 +139,8 @@ class DatabaseManager:
             ORDER BY p.eval_timestamp DESC
             LIMIT ?
         """
-        try:
-            return self._execute_query(query, params=(medicine_name, limit))
+        return self._execute_query(query, params=(medicine_name, limit))
+
     def get_all_performance_logs(self, limit=10):
         """Fetches all performance evaluation logs."""
         query = """
@@ -145,19 +149,13 @@ class DatabaseManager:
             ORDER BY p.eval_timestamp DESC
             LIMIT ?
         """
-        try:
-            return self._execute_query(query, params=(limit,))
-        except Exception:
-            return pd.DataFrame()
+        return self._execute_query(query, params=(limit,))
 
     def get_success_rate(self):
         """Calculates the percentage of GOOD scores."""
         query = "SELECT score FROM performance_logs"
-        try:
-            df = self._execute_query(query)
-            if df.empty:
-                return 0
-            good_count = len(df[df['score'] == 'GOOD'])
-            return (good_count / len(df)) * 100
-        except Exception:
+        df = self._execute_query(query)
+        if df.empty:
             return 0
+        good_count = len(df[df['score'] == 'GOOD'])
+        return (good_count / len(df)) * 100
