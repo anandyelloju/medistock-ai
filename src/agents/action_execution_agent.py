@@ -19,11 +19,14 @@ class ActionExecutionAgent(BaseAgent):
         self.executed_items = set() # Simple deduplication in memory for current session
         self.db = DatabaseManager()
 
-    def evaluate(self, row, context=None, plan=None):
+    def evaluate(self, context):
         """
         Executes an action plan if it meets high-urgency criteria.
-        Expects a 'plan' dictionary containing reorder details.
+        Read plan from context.decisions.
         """
+        row = context.inventory_data
+        plan = context.decisions.get('EXECUTION_PLAN')
+
         if not plan:
             return None
 
@@ -35,24 +38,14 @@ class ActionExecutionAgent(BaseAgent):
             
             # 1. Memory-based Deduplication (Current Session)
             if medicine_name in self.executed_items:
-                return {
+                alert = {
                     "type": "ACTION_LOG",
                     "priority": 3,
                     "status": "SKIPPED",
                     "message": f"Action for {medicine_name} already logged in this session."
                 }
-
-            # 2. File-based Deduplication (Persistent)
-            # Check if a PO for this item was already generated today
-            export_dir = "database/exports"
-            today_prefix = datetime.now().strftime("%Y%m%d")
-            if os.path.exists(export_dir):
-                existing_files = os.listdir(export_dir)
-                # Check for files like PO_YYYYMMDD_*.csv that might contain this item
-                # (Simple check: if any PO was generated today, we pause for safety or we could parse them)
-                # For now, let's stick to the session-based and add a more descriptive message
-                pass 
-
+                context.actions["ACTION_LOG"] = alert
+                return alert
 
             # Prepare data for PO
             po_plan = {
@@ -77,13 +70,15 @@ class ActionExecutionAgent(BaseAgent):
                     details=file_path
                 )
                 
-                return {
+                alert = {
                     "type": "ACTION_LOG",
                     "priority": 3, # Info level for logs
                     "status": "EXECUTED",
                     "message": f"✅ Purchase Order generated for {medicine_name}.",
                     "file_path": file_path
                 }
+                context.actions["ACTION_LOG"] = alert
+                return alert
             else:
                 logger.error(f"FAILURE: Could not generate Purchase Order for {medicine_name}")
                 
@@ -96,11 +91,13 @@ class ActionExecutionAgent(BaseAgent):
                     details="File system error"
                 )
                 
-                return {
+                alert = {
                     "type": "ACTION_LOG",
                     "priority": 1, # Critical if execution fails
                     "status": "FAILED",
                     "message": f"❌ Failed to generate Purchase Order for {medicine_name}."
                 }
+                context.actions["ACTION_LOG"] = alert
+                return alert
 
         return None

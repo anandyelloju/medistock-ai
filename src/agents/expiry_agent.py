@@ -6,11 +6,14 @@ class ExpiryAgent(BaseAgent):
     def __init__(self):
         super().__init__("ExpiryAgent", "analysis", 1)
 
-    def evaluate(self, row, context=None):
+    def evaluate(self, context):
+        row = context.inventory_data
         if row['Days_To_Expiry'] < EXPIRY_THRESHOLD_DAYS:
-            return {
+            alert = {
                 "type": "EXPIRY",
                 "priority": self.priority,
                 "message": "Item is approaching expiry date."
             }
+            context.risk_flags["EXPIRY"] = alert
+            return alert
         return None

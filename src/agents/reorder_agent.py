@@ -6,11 +6,14 @@ class ReorderAgent(BaseAgent):
     def __init__(self):
         super().__init__("ReorderAgent", "decision", 2)
 
-    def evaluate(self, row, context=None):
+    def evaluate(self, context):
+        row = context.inventory_data
         if row['Stock_Quantity'] < (row['Min_Stock_Level'] + REORDER_BUFFER_DAYS):
-            return {
+            alert = {
                 "type": "REORDER",
                 "priority": self.priority,
                 "message": "Stock below minimum level."
             }
+            context.decisions["REORDER"] = alert
+            return alert
         return None

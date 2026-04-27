@@ -6,11 +6,14 @@ class DeadStockAgent(BaseAgent):
     def __init__(self):
         super().__init__("DeadStockAgent", "analysis", 3)
 
-    def evaluate(self, row, context=None):
+    def evaluate(self, context):
+        row = context.inventory_data
         if row['Days_Since_Last_Sale'] > DEAD_STOCK_DAYS:
-            return {
+            alert = {
                 "type": "DEAD_STOCK",
                 "priority": self.priority,
                 "message": "No recent sales recorded (Dead Stock)."
             }
+            context.risk_flags["DEAD_STOCK"] = alert
+            return alert
         return None

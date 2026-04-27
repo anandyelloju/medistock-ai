@@ -27,4 +27,4 @@ def evaluate_row(row):
     context = kb.get_medicine_context(row['Item_Name'])
 
     # Delegate orchestration to the Coordinator
-    return coordinator.orchestrate(row, context=context)
+    return coordinator.orchestrate(row, domain_knowledge=context)
