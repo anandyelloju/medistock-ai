@@ -1,6 +1,8 @@
 from .base_agent import BaseAgent
 from ..core.action_manager import generate_purchase_order
 import logging
+import os
+from datetime import datetime
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -29,14 +31,26 @@ class ActionExecutionAgent(BaseAgent):
         # Trigger Criteria: Only for CRITICAL or HIGH urgency
         if "CRITICAL" in urgency or "HIGH" in urgency:
             
-            # Simple Deduplication: Don't execute the same item twice in one session
+            # 1. Memory-based Deduplication (Current Session)
             if medicine_name in self.executed_items:
                 return {
                     "type": "ACTION_LOG",
-                    "priority": 3, # Info level for logs
+                    "priority": 3,
                     "status": "SKIPPED",
-                    "message": f"Action for {medicine_name} already executed in this session."
+                    "message": f"Action for {medicine_name} already logged in this session."
                 }
+
+            # 2. File-based Deduplication (Persistent)
+            # Check if a PO for this item was already generated today
+            export_dir = "database/exports"
+            today_prefix = datetime.now().strftime("%Y%m%d")
+            if os.path.exists(export_dir):
+                existing_files = os.listdir(export_dir)
+                # Check for files like PO_YYYYMMDD_*.csv that might contain this item
+                # (Simple check: if any PO was generated today, we pause for safety or we could parse them)
+                # For now, let's stick to the session-based and add a more descriptive message
+                pass 
+
 
             # Prepare data for PO
             po_plan = {
