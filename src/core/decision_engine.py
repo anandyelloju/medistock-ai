@@ -1,4 +1,4 @@
-from ..agents import ReorderAgent, ExpiryAgent, DeadStockAgent, InventoryIntelligenceAgent, ReorderExecutionAgent
+from ..agents import ReorderAgent, ExpiryAgent, DeadStockAgent, InventoryIntelligenceAgent, ReorderExecutionAgent, ActionExecutionAgent
 from ..data.knowledge_base import kb
 
 # Initialize agents for chaining
@@ -6,6 +6,7 @@ expiry_agent = ExpiryAgent()
 dead_stock_agent = DeadStockAgent()
 intel_agent = InventoryIntelligenceAgent()
 exec_agent = ReorderExecutionAgent()
+action_agent = ActionExecutionAgent()
 basic_reorder = ReorderAgent()
 
 def evaluate_row(row):
@@ -36,6 +37,11 @@ def evaluate_row(row):
         plan_alert = exec_agent.evaluate(row, context=context)
         if plan_alert:
             alerts['EXECUTION_PLAN'] = plan_alert
+            
+            # Phase C: Action Execution (Automation for High/Critical priority)
+            action_log = action_agent.evaluate(row, context=context, plan=plan_alert)
+            if action_log:
+                alerts['ACTION_LOG'] = action_log
     else:
         # Phase C: Fallback to Basic Reorder
         basic_alert = basic_reorder.evaluate(row, context=context)
