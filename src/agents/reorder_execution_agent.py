@@ -1,4 +1,5 @@
 from .base_agent import BaseAgent
+from ..data.database_manager import DatabaseManager
 from config.settings import REORDER_BUFFER_DAYS, LEAD_TIME_DAYS, SAFETY_BUFFER_DAYS
 import math
 
@@ -9,6 +10,7 @@ class ReorderExecutionAgent(BaseAgent):
     """
     def __init__(self):
         super().__init__("ReorderExecutionAgent", "decision", 2, dependencies=["InventoryIntelligenceAgent"])
+        self.db = DatabaseManager()
 
     def evaluate(self, context):
         row = context.inventory_data
@@ -43,6 +45,14 @@ class ReorderExecutionAgent(BaseAgent):
                 "reorder_qty": plan_qty,
                 "urgency": urgency
             }
+            
+            # Persistent Decision Tracking
+            self.db.log_decision(
+                medicine_name=row['Item_Name'],
+                stockout_days=row['Days_Until_Stockout'],
+                reorder_qty=plan_qty
+            )
+
             context.decisions["EXECUTION_PLAN"] = alert
             return alert
             

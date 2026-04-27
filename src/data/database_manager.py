@@ -69,3 +69,32 @@ class DatabaseManager:
         except Exception:
             # If table doesn't exist yet, return an empty DataFrame with correct columns
             return pd.DataFrame(columns=['id', 'medicine_name', 'quantity', 'action_type', 'status', 'details', 'timestamp'])
+    def log_decision(self, medicine_name, stockout_days, reorder_qty):
+        """
+        Logs a reorder decision into the SQLite database.
+        Prevents duplicates by checking for existing identical decisions on the same day.
+        """
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS decision_logs (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    medicine_name TEXT,
+                    stockout_days REAL,
+                    reorder_qty INTEGER,
+                    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+                )
+            """)
+            
+            # Simple deduplication: Check if this item has a decision in the last 12 hours
+            cursor.execute("""
+                SELECT id FROM decision_logs 
+                WHERE medicine_name = ? AND timestamp > datetime('now', '-12 hours')
+            """, (medicine_name,))
+            
+            if not cursor.fetchone():
+                cursor.execute("""
+                    INSERT INTO decision_logs (medicine_name, stockout_days, reorder_qty)
+                    VALUES (?, ?, ?)
+                """, (medicine_name, stockout_days, reorder_qty))
+                conn.commit()
