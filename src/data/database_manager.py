@@ -126,5 +126,16 @@ class DatabaseManager:
         """
         try:
             return self._execute_query(query)
+    def get_performance_history(self, medicine_name, limit=5):
+        """Fetches the performance history for a specific medicine."""
+        query = """
+            SELECT p.score, p.eval_timestamp FROM performance_logs p
+            JOIN decision_logs d ON p.decision_id = d.id
+            WHERE d.medicine_name = ?
+            ORDER BY p.eval_timestamp DESC
+            LIMIT ?
+        """
+        try:
+            return self._execute_query(query, params=(medicine_name, limit))
         except Exception:
             return pd.DataFrame()
