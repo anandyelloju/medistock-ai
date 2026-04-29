@@ -1,3 +1,4 @@
+import os
 from groq import Groq
 from ..data.database_manager import DatabaseManager
 from .config import Config
@@ -62,7 +63,7 @@ def generate_explanation(row, alerts, context=None):
 
     try:
         # Check if API key exists
-        if not os.getenv("GROQ_API_KEY"):
+        if not Config.GROQ_API_KEY:
             raise ValueError("GROQ_API_KEY not found. Please add it to your .env file.")
 
         response = client.chat.completions.create(

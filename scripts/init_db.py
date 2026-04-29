@@ -21,6 +21,7 @@ def init_db(db_path='database/inventory.db'):
             Min_Stock_Level INTEGER,
             Cost_Per_Unit REAL,
             Expiry_Date TEXT,
+            Last_Sold_Date TEXT,
             Avg_Daily_Usage REAL,
             Supplier_Name TEXT
         )

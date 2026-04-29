@@ -11,8 +11,7 @@ def process_data(df):
     df['Days_To_Expiry'] = (df['Expiry_Date'] - today).dt.days
     df['Days_Since_Last_Sale'] = (today - df['Last_Sold_Date']).dt.days
     
-    # Demand Forecasting
-    df['Avg_Daily_Usage'] = df['Monthly_Usage'] / 30
+    # Demand Forecasting - Avg_Daily_Usage is already in the table
     
     # Calculate days until stockout, handling zero usage cases
     df['Days_Until_Stockout'] = df.apply(

@@ -1,107 +1,42 @@
 [
   {
     "medicine_name": "Paracetamol",
-    "category": "Painkiller",
-    "seasonal_demand": "Steady",
-    "criticality": "High",
-    "substitute_available": "Yes"
+    "composition": "Acetaminophen 500mg",
+    "alternative_brands": ["Tylenol", "Panadol", "Calpol"]
   },
   {
     "medicine_name": "Amoxicillin",
-    "category": "Antibiotic",
-    "seasonal_demand": "High (Winter)",
-    "criticality": "High",
-    "substitute_available": "Yes"
+    "composition": "Amoxicillin 500mg",
+    "alternative_brands": ["Moxatag", "Trimox", "Amoxil"]
   },
   {
     "medicine_name": "Insulin Glargine",
-    "category": "Antidiabetic",
-    "seasonal_demand": "Steady",
-    "criticality": "Critical",
-    "substitute_available": "No"
+    "composition": "Insulin Glargine 100 IU/mL",
+    "alternative_brands": ["Lantus", "Basaglar", "Toujeo"]
   },
   {
     "medicine_name": "Atorvastatin",
-    "category": "Statins",
-    "seasonal_demand": "Steady",
-    "criticality": "High",
-    "substitute_available": "Yes"
-  },
-  {
-    "medicine_name": "Ibuprofen",
-    "category": "NSAID",
-    "seasonal_demand": "Moderate",
-    "criticality": "Medium",
-    "substitute_available": "Yes"
-  },
-  {
-    "medicine_name": "Cetirizine",
-    "category": "Antihistamine",
-    "seasonal_demand": "High (Spring)",
-    "criticality": "Low",
-    "substitute_available": "Yes"
+    "composition": "Atorvastatin 20mg",
+    "alternative_brands": ["Lipitor", "Caduet", "Torvacard"]
   },
   {
     "medicine_name": "Metformin",
-    "category": "Antidiabetic",
-    "seasonal_demand": "Steady",
-    "criticality": "High",
-    "substitute_available": "Yes"
+    "composition": "Metformin Hydrochloride 500mg",
+    "alternative_brands": ["Glucophage", "Fortamet", "Riomet"]
   },
   {
-    "medicine_name": "Salbutamol",
-    "category": "Bronchodilator",
-    "seasonal_demand": "High (Winter/Spring)",
-    "criticality": "Critical",
-    "substitute_available": "No"
+    "medicine_name": "Ibuprofen",
+    "composition": "Ibuprofen 400mg",
+    "alternative_brands": ["Advil", "Brufen", "Motrin"]
+  },
+  {
+    "medicine_name": "Cetirizine",
+    "composition": "Cetirizine Hydrochloride 10mg",
+    "alternative_brands": ["Zyrtec", "Reactine", "Allercet"]
   },
   {
     "medicine_name": "Lisinopril",
-    "category": "ACE Inhibitor",
-    "seasonal_demand": "Steady",
-    "criticality": "High",
-    "substitute_available": "Yes"
-  },
-  {
-    "medicine_name": "Omeprazole",
-    "category": "Proton Pump Inhibitor",
-    "seasonal_demand": "Moderate",
-    "criticality": "Medium",
-    "substitute_available": "Yes"
-  },
-  {
-    "medicine_name": "Amlodipine",
-    "category": "Calcium Channel Blocker",
-    "seasonal_demand": "Steady",
-    "criticality": "High",
-    "substitute_available": "Yes"
-  },
-  {
-    "medicine_name": "Levothyroxine",
-    "category": "Thyroid Hormone",
-    "seasonal_demand": "Steady",
-    "criticality": "High",
-    "substitute_available": "No"
-  },
-  {
-    "medicine_name": "Azithromycin",
-    "category": "Antibiotic",
-    "seasonal_demand": "High (Winter)",
-    "criticality": "High",
-    "substitute_available": "Yes"
-  },
-  {
-    "medicine_name": "Warfarin",
-    "category": "Anticoagulant",
-    "seasonal_demand": "Steady",
-    "criticality": "Critical",
-    "substitute_available": "No"
-  },
-  {
-    "medicine_name": "Furosemide",
-    "category": "Diuretic",
-    "seasonal_demand": "Steady",
-    "criticality": "High",
-    "substitute_available": "Yes"
+    "composition": "Lisinopril 10mg",
+    "alternative_brands": ["Prinivil", "Zestril", "Qbrelis"]
   }
 ]
